@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Reports (generated files)
+reports/
+
+# Logs
+logs/
+
+# macOS
+.DS_Store
