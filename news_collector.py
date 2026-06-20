@@ -87,8 +87,8 @@ RSS_SOURCES = {
             "lang": "zh",
         },
         {
-            "name": "聯合新聞網",
-            "url": "https://udn.com/rssfeed/news/2/0?ch=news",
+            "name": "Yahoo 新聞",
+            "url": "https://tw.news.yahoo.com/rss/",
             "category": "台灣",
             "lang": "zh",
         },
