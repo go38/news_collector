@@ -31,8 +31,8 @@ RSS_SOURCES = {
             "lang": "en",
         },
         {
-            "name": "CNN",
-            "url": "http://rss.cnn.com/rss/edition.rss",
+            "name": "Al Jazeera",
+            "url": "https://www.aljazeera.com/xml/rss/all.xml",
             "category": "International",
             "lang": "en",
         },
