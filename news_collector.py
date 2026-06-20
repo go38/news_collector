@@ -25,8 +25,8 @@ RSS_SOURCES = {
             "lang": "en",
         },
         {
-            "name": "Reuters",
-            "url": "https://feeds.reuters.com/reuters/topNews",
+            "name": "NPR News",
+            "url": "https://feeds.npr.org/1001/rss.xml",
             "category": "International",
             "lang": "en",
         },
@@ -37,8 +37,8 @@ RSS_SOURCES = {
             "lang": "en",
         },
         {
-            "name": "AP News",
-            "url": "https://rsshub.app/apnews/topics/ap-top-news",
+            "name": "ABC News",
+            "url": "https://feeds.abcnews.com/abcnews/internationalheadlines",
             "category": "International",
             "lang": "en",
         },
