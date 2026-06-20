@@ -4,26 +4,30 @@
 
 ## 功能
 
-- **多元來源**：BBC、Reuters、CNN、AP、BBC 中文、紐約時報中文、自由時報、聯合新聞網
+- **多元來源**：BBC、NPR、Al Jazeera、ABC News、BBC 中文、紐約時報中文、自由時報、Yahoo 新聞
 - **分類整理**：國際、科技、財經、體育、科學等
 - **雙語分區**：中英文各自獨立顯示
 - **美觀報告**：深色主題響應式 HTML，手機電腦皆可閱覽
 - **容錯設計**：單一來源失敗不影響其他來源
+- **自動部署**：GitHub Actions 每日排程執行，自動發布至 GitHub Pages
 
 ## 目錄結構
 
 ```
 news_collector/
-├── news_collector.py   # 主程式
-├── run_news.sh         # 執行腳本
-├── README.md           # 本說明文件
-├── logs/               # 執行日誌（自動建立）
-└── reports/            # HTML 報告輸出
-    ├── latest.html     # 最新報告（每次覆蓋）
-    └── news_YYYY-MM-DD.html
+├── news_collector.py          # 主程式
+├── run_news.sh                # 本機執行腳本
+├── README.md                  # 本說明文件
+├── .github/
+│   └── workflows/
+│       └── daily-news.yml     # GitHub Actions 排程設定
+├── logs/                      # 執行日誌（自動建立，本機用）
+└── reports/                   # HTML 報告輸出
+    ├── latest.html            # 最新報告（每次覆蓋）
+    └── news_YYYY-MM-DD.html   # 日期存檔
 ```
 
-## 安裝
+## 安裝（本機執行）
 
 ### 1. 安裝依賴
 
@@ -34,7 +38,6 @@ pip install feedparser
 或使用虛擬環境（推薦）：
 
 ```bash
-cd news_collector
 python3 -m venv .venv
 source .venv/bin/activate
 pip install feedparser
@@ -48,13 +51,13 @@ chmod +x run_news.sh
 
 ## 使用方式
 
-### 直接執行
+### 本機執行
 
 ```bash
-# 執行並產生報告
+# 直接執行
 python3 news_collector.py
 
-# 使用 shell script（含日誌記錄）
+# 使用 shell script（自動記錄日誌、自動安裝依賴）
 ./run_news.sh
 
 # 執行後自動開啟瀏覽器
@@ -68,28 +71,37 @@ open reports/latest.html       # macOS
 xdg-open reports/latest.html   # Linux
 ```
 
-## 排程設定（每天早上 7:00 自動執行）
+## 自動排程
 
-### macOS / Linux — crontab
+### GitHub Actions（推薦）
+
+專案已內建 `.github/workflows/daily-news.yml`，每天台灣時間 07:00（UTC 23:00）自動執行，並將報告部署至 GitHub Pages。
+
+啟用步驟：
+
+1. 到 GitHub 儲存庫 → **Settings** → **Pages**
+2. Source 選擇 **GitHub Actions**
+3. 推送程式碼後，Actions 即會自動排程
+
+手動觸發：在 **Actions** 頁面選擇 `Daily News Collection` → **Run workflow**。
+
+---
+
+### 本機排程（替代方案）
+
+#### crontab（macOS / Linux）
 
 ```bash
-# 編輯排程
 crontab -e
 ```
 
-加入以下行（請換成你的實際路徑）：
+加入（請替換為你的實際路徑）：
 
 ```cron
 0 7 * * * /Users/yourname/Desktop/PlanA/news_collector/run_news.sh >> /Users/yourname/Desktop/PlanA/news_collector/cron.log 2>&1
 ```
 
-確認排程已加入：
-
-```bash
-crontab -l
-```
-
-### macOS — launchd（更穩定，推薦）
+#### launchd（macOS，更穩定）
 
 建立 `~/Library/LaunchAgents/com.newscollector.plist`：
 
@@ -120,17 +132,33 @@ crontab -l
 </plist>
 ```
 
-載入排程：
-
 ```bash
 launchctl load ~/Library/LaunchAgents/com.newscollector.plist
 ```
 
-手動觸發測試：
+## 目前 RSS 來源
 
-```bash
-launchctl start com.newscollector
-```
+### English
+
+| 來源 | 分類 |
+|---|---|
+| BBC News | International |
+| NPR News | International |
+| Al Jazeera | International |
+| ABC News | International |
+| BBC Technology | Technology |
+| BBC Business | Finance |
+| BBC Sport | Sports |
+| BBC Science | Science |
+
+### 中文
+
+| 來源 | 分類 |
+|---|---|
+| BBC 中文 | 國際 |
+| 紐約時報中文 | 國際 |
+| 自由時報 | 台灣 |
+| Yahoo 新聞 | 台灣 |
 
 ## 新增或修改新聞來源
 
@@ -145,7 +173,6 @@ RSS_SOURCES = {
             "category": "Technology",   # International / Technology / Finance / Sports / Science
             "lang": "en",
         },
-        # ...
     ],
     "chinese": [
         {
@@ -154,9 +181,18 @@ RSS_SOURCES = {
             "category": "科技",         # 國際 / 科技 / 財經 / 體育 / 台灣
             "lang": "zh",
         },
-        # ...
     ],
 }
+```
+
+新增分類時，同步在 `news_collector.py` 的 `CATEGORY_ICONS` 和 `CATEGORY_COLORS` 加入對應設定。
+
+新增來源前，建議先用 feedparser 確認 RSS 能抓到當天文章：
+
+```python
+import feedparser
+feed = feedparser.parse("https://example.com/feed.rss")
+print(len(feed.entries), feed.entries[0].title if feed.entries else "no entries")
 ```
 
 ## 常見問題
@@ -165,7 +201,7 @@ RSS_SOURCES = {
 A: 該 RSS 網址可能暫時無法存取，或 URL 已更改。程式會記錄警告但繼續執行，不影響其他來源。
 
 **Q: cron 沒有執行**
-A: 確認 crontab 路徑為絕對路徑，且 run_news.sh 有執行權限 (`chmod +x`)。可先手動執行 `./run_news.sh` 確認正常。
+A: 確認 crontab 使用絕對路徑，且 `run_news.sh` 有執行權限（`chmod +x`）。可先手動執行 `./run_news.sh` 確認正常。
 
 **Q: 想調整每個來源抓取的則數**
 A: 修改 `news_collector.py` 中的 `MAX_ITEMS_PER_SOURCE`（預設 8）。
