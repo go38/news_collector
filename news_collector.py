@@ -186,12 +186,14 @@ def _clean_summary(text: str) -> str:
 
 
 def _parse_date(entry) -> str:
+    now = datetime.now(timezone.utc)
     for attr in ("published_parsed", "updated_parsed"):
         t = getattr(entry, attr, None)
         if t:
             try:
                 dt = datetime(*t[:6], tzinfo=timezone.utc)
-                return dt.strftime("%Y-%m-%d %H:%M UTC")
+                if (now - dt).days <= 7:
+                    return dt.strftime("%Y-%m-%d %H:%M UTC")
             except Exception:
                 pass
     return ""
