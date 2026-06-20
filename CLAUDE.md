@@ -15,7 +15,7 @@ python3 news_collector.py
 ./run_news.sh --open
 
 # View the generated report
-open reports/latest.html
+open reports/index.html
 ```
 
 ## Dependency
@@ -42,7 +42,7 @@ Everything lives in `news_collector.py` — one file, no framework:
 
 ## Output
 
-- `reports/latest.html` — always overwritten with the newest run
+- `reports/index.html` — always overwritten with the newest run (GitHub Pages entry point)
 - `reports/news_YYYY-MM-DD.html` — date-stamped archive copy
 - `logs/run_TIMESTAMP.log` — created by `run_news.sh`; only the 30 most recent logs are kept
 

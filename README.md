@@ -23,7 +23,7 @@ news_collector/
 │       └── daily-news.yml     # GitHub Actions 排程設定
 ├── logs/                      # 執行日誌（自動建立，本機用）
 └── reports/                   # HTML 報告輸出
-    ├── latest.html            # 最新報告（每次覆蓋）
+    ├── index.html             # 最新報告（每次覆蓋，GitHub Pages 入口）
     └── news_YYYY-MM-DD.html   # 日期存檔
 ```
 
@@ -67,8 +67,8 @@ python3 news_collector.py
 ### 查看報告
 
 ```bash
-open reports/latest.html       # macOS
-xdg-open reports/latest.html   # Linux
+open reports/index.html        # macOS
+xdg-open reports/index.html    # Linux
 ```
 
 ## 自動排程

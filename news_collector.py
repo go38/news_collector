@@ -8,7 +8,7 @@ import feedparser
 import os
 import sys
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from html import escape
 import time
@@ -98,6 +98,7 @@ RSS_SOURCES = {
 MAX_ITEMS_PER_SOURCE = 8
 REPORT_DIR = Path(__file__).parent / "reports"
 REQUEST_TIMEOUT = 15
+TW_TZ = timezone(timedelta(hours=8))
 
 # ── Logging ────────────────────────────────────────────────────────────────────
 
@@ -191,9 +192,9 @@ def _parse_date(entry) -> str:
         t = getattr(entry, attr, None)
         if t:
             try:
-                dt = datetime(*t[:6], tzinfo=timezone.utc)
+                dt = datetime(*t[:6], tzinfo=timezone.utc).astimezone(TW_TZ)
                 if (now - dt).days <= 7:
-                    return dt.strftime("%Y-%m-%d %H:%M UTC")
+                    return dt.strftime("%Y-%m-%d %H:%M TST")
             except Exception:
                 pass
     return ""
@@ -298,8 +299,9 @@ def _section_html(title: str, flag: str, articles: list[dict], lang_class: str) 
 
 
 def generate_html(data: dict, generated_at: datetime) -> str:
-    date_str = generated_at.strftime("%B %d, %Y")
-    datetime_str = generated_at.strftime("%Y-%m-%d %H:%M UTC")
+    tw_time = generated_at.astimezone(TW_TZ)
+    date_str = tw_time.strftime("%B %d, %Y")
+    datetime_str = tw_time.strftime("%Y-%m-%d %H:%M TST")
     en_articles = data["english"]
     zh_articles = data["chinese"]
     total = len(en_articles) + len(zh_articles)
@@ -640,13 +642,13 @@ def main():
     html = generate_html(data, now)
 
     dated_path = REPORT_DIR / f"news_{now.strftime('%Y-%m-%d')}.html"
-    latest_path = REPORT_DIR / "latest.html"
+    index_path = REPORT_DIR / "index.html"
 
     dated_path.write_text(html, encoding="utf-8")
-    latest_path.write_text(html, encoding="utf-8")
+    index_path.write_text(html, encoding="utf-8")
 
     log.info(f"Report saved: {dated_path}")
-    log.info(f"Report saved: {latest_path}")
+    log.info(f"Report saved: {index_path}")
     log.info("=== Done ===")
 
 
