@@ -46,6 +46,31 @@ Everything lives in `news_collector.py` — one file, no framework:
 - `reports/news_YYYY-MM-DD.html` — date-stamped archive copy
 - `logs/run_TIMESTAMP.log` — created by `run_news.sh`; only the 30 most recent logs are kept
 
+## Active RSS sources
+
+### English
+| 來源 | 分類 |
+|---|---|
+| BBC News | International |
+| NPR News | International |
+| Al Jazeera | International |
+| ABC News | International |
+| BBC Technology | Technology |
+| BBC Business | Finance |
+| BBC Sport | Sports |
+| BBC Science | Science |
+
+### 中文
+| 來源 | 分類 |
+|---|---|
+| BBC 中文 | 國際 |
+| 紐約時報中文 | 國際 |
+| 自由時報 | 台灣 |
+| Yahoo 新聞 | 台灣 |
+
+> 換過的失效來源：Reuters → NPR News、AP News → ABC News、CNN → Al Jazeera、聯合新聞網 → Yahoo 新聞。
+> 測試新來源前，先用 feedparser 確認 RSS 能抓到當天文章再替換。
+
 ## Adding categories
 
 Add a new category string in `RSS_SOURCES`, then add matching entries to `CATEGORY_ICONS` and `CATEGORY_COLORS` in the HTML generation section so the new category renders with a color and icon.
